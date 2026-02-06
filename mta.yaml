@@ -1,0 +1,112 @@
+_schema-version: 3.3.0
+ID: MaterialHubApp
+description: A simple CAP project.
+version: 1.0.0
+modules:
+  - name: MaterialHubApp-srv
+    type: nodejs
+    path: gen/srv
+    requires:
+      - name: MaterialHubApp-auth
+      - name: MaterialHubApp-db
+    provides:
+      - name: srv-api
+        properties:
+          srv-url: ${default-url}
+    parameters:
+      buildpack: nodejs_buildpack
+      instances: 1
+    build-parameters:
+      builder: npm-ci
+  - name: MaterialHubApp-db-deployer
+    type: hdb
+    path: gen/db
+    requires:
+      - name: MaterialHubApp-db
+        properties:
+          TARGET_CONTAINER: ~{hdi-container-name}
+      - name: cross-container-service-1
+        group: SERVICE_REPLACEMENTS
+        properties:
+          key: ServiceName_1
+          service: ~{the-service-name}
+    parameters:
+      buildpack: nodejs_buildpack
+  - name: MaterialHubApp
+    type: approuter.nodejs
+    path: app/router
+    requires:
+      - name: srv-api
+        group: destinations
+        properties:
+          forwardAuthToken: true
+          name: srv-api
+          url: ~{srv-url}
+      - name: MaterialHubApp-auth
+    parameters:
+      disk-quota: 256M
+      keep-existing-routes: true
+      memory: 256M
+    build-parameters:
+      ignore:
+        - "default-env.json"
+        - ".env"
+  - name: MaterialHubAppmaterialhub
+    type: html5
+    path: app/materialhub
+    parameters:
+      sap.cloud.service: materialhub
+    build-parameters:
+      builder: custom
+      build-result: dist
+      commands:
+        - npm install
+        - npm run build
+      supported-platforms: []
+resources:
+  - name: MaterialHubApp-auth
+    type: org.cloudfoundry.managed-service
+    requires:
+      - name: srv-api
+    parameters:
+      service: xsuaa
+      service-plan: application
+      path: ./xs-security.json
+      config:
+        tenant-mode: dedicated
+        xsappname: materialhubapp-${space}
+        oauth2-configuration:
+          redirect-uris:
+            - https://*~{srv-api/srv-url}/**
+  - name: MaterialHubApp-db
+    type: com.sap.xs.hdi-container
+    parameters:
+      service: hana
+      service-plan: hdi-shared
+    properties:
+      hdi-container-name: ${service-name}
+  - name: cross-container-service-1
+    type: org.cloudfoundry.existing-service
+    parameters:
+      service-name: DATASPHERE
+    properties:
+      the-service-name: ${service-name}
+  - name: MaterialHubApp-html5-repo-host
+    type: org.cloudfoundry.managed-service
+    parameters:
+      service: html5-apps-repo
+      service-plan: app-host
+  - name: MaterialHubApp-html5-runtime
+    type: org.cloudfoundry.managed-service
+    parameters:
+      service: html5-apps-repo
+      service-plan: app-runtime
+parameters:
+  enable-parallel-deployments: true
+  deploy_mode: html5-repo
+build-parameters:
+  before-all:
+    - builder: custom
+      commands:
+        - npm ci
+        - npx cds build --production

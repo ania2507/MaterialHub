@@ -1,0 +1,32 @@
+{
+  "name": "materialhub",
+  "version": "0.0.1",
+  "description": "Material Hub",
+  "keywords": [
+    "ui5",
+    "openui5",
+    "sapui5"
+  ],
+  "main": "webapp/index.html",
+  "scripts": {
+  "build": "ui5 build --all",
+  "start": "ui5 serve -o index.html",
+  "deploy-config": "npx -p @sap/ux-ui5-tooling fiori add deploy-config cf",
+  "build-local": "ui5 build preload --clean-dest"
+  },
+  "devDependencies": {
+    "@sap/ux-ui5-tooling": "^1.12.0",
+    "@ui5/cli": "^3.10.0",
+    "ui5-task-copy-resources": "^0.0.1",
+    "ui5-task-zipper": "^3"
+  },
+  "ui5": {
+    "dependencies": [
+      "ui5-task-zipper",
+      "sap.ui.core",
+      "sap.m",
+      "sap.fe.core",
+      "sap.fe.templates"
+    ]
+  }
+}

@@ -1,0 +1,58 @@
+{
+	"ServiceName_1": {
+		"application_user": {
+			"schema_privileges": [
+				{
+					"privileges": [
+						"SELECT",
+						"INSERT",
+						"UPDATE",
+						"DELETE",
+						"EXECUTE"
+					]
+				}
+			],
+			"global_object_privileges": [
+				{
+					"type": "REMOTE SOURCE",
+					"name": "DATASPHERE",
+					"privileges": [
+						"CREATE VIRTUAL TABLE",
+						"CREATE REMOTE SUBSCRIPTION"
+					],
+					"privileges_with_grant_option": [
+						"CREATE VIRTUAL TABLE",
+						"CREATE REMOTE SUBSCRIPTION"
+					]
+				}
+			]
+		},
+		"object_owner": {
+			"schema_privileges": [
+				{
+					"privileges_with_grant_option": [
+						"SELECT",
+						"INSERT",
+						"UPDATE",
+						"DELETE",
+						"EXECUTE"
+					]
+				}
+			],
+			"global_object_privileges": [
+				{
+					"type": "REMOTE SOURCE",
+					"name": "DATASPHERE",
+					"privileges": [
+						"CREATE VIRTUAL TABLE",
+						"CREATE REMOTE SUBSCRIPTION"
+					],
+					"privileges_with_grant_option": [
+						"CREATE VIRTUAL TABLE",
+						"CREATE REMOTE SUBSCRIPTION"
+					]
+				}
+			]
+		}
+	}
+}
