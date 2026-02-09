@@ -2,6 +2,9 @@
   "name": "MaterialHubApp",
   "version": "1.0.0",
   "description": "A simple CAP project.",
+  "engines": {
+    "node": "^18.0.0 || ^20.0.0"
+  },
   "dependencies": {
     "@cap-js/hana": "^2",
     "@sap/cds": "^9",
@@ -15,7 +18,7 @@
     "cds-plugin-ui5": "^0.13.0"
   },
   "scripts": {
-    "start": "cds-serve",
+    "start": "cds run",
     "watch-materialhub": "cds watch --open materialhub/index.html?sap-ui-xx-viewCache=false --livereload false"
   },
   "private": true,
