@@ -2,9 +2,6 @@
   "name": "MaterialHubApp",
   "version": "1.0.0",
   "description": "A simple CAP project.",
-  "engines": {
-    "node": "^18.0.0 || ^20.0.0"
-  },
   "dependencies": {
     "@cap-js/hana": "^2",
     "@sap/cds": "^9",
@@ -42,5 +39,5 @@
   "sapux": [
     "app/materialhub"
   ],
-  "engines": { "node": ">=18 <21" }
+  "engines": { "node": "18.x || 20.x" }
 }
