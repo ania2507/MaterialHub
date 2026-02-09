@@ -41,5 +41,6 @@
   },
   "sapux": [
     "app/materialhub"
-  ]
+  ],
+  "engines": { "node": ">=18 <21" }
 }
