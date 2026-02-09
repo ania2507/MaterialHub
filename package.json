@@ -15,7 +15,7 @@
     "cds-plugin-ui5": "^0.13.0"
   },
   "scripts": {
-    "start": "cds-serve",
+    "start": "cds run",
     "watch-materialhub": "cds watch --open materialhub/index.html?sap-ui-xx-viewCache=false --livereload false"
   },
   "private": true,
@@ -38,5 +38,6 @@
   },
   "sapux": [
     "app/materialhub"
-  ]
+  ],
+  "engines": { "node": ">=18 <21" }
 }
