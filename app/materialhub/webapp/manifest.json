@@ -11,7 +11,7 @@
     "description": "{{appDescription}}",
     "dataSources": {
       "mainService": {
-        "uri": "odata/v4/processor/",
+        "uri": "/odata/v4/service-catalog/",
         "type": "OData",
         "settings": {
           "odataVersion": "4.0"
@@ -40,7 +40,7 @@
     }
   },
   "sap.ui5": {
-    "flexEnabled": true,
+    "flexEnabled": false,
     "dependencies": {
       "minUI5Version": "1.142.0",
       "libs": {
@@ -98,22 +98,6 @@
             "settings": {
               "contextPath": "/MARA",
               "variantManagement": "Page",
-              "hideFilterBar": false,
-              "defaultContentView": "Hybrid",
-              "keyPerformanceIndicators": {
-                "KPIMateriali": {
-                  "entitySet": "MARA",
-                  "qualifier": "MainKPIMateriali",
-                  "updateOnSelection": true,
-                  "filterable": true
-                },
-                "KPIPotenzialiDuplicati": {
-                  "entitySet": "MARA",
-                  "qualifier": "KPI_PotenzialiDuplicati",
-                  "updateOnSelection": true,
-                  "filterable": true
-                }
-              },
               "navigation": {
                 "MARA": {
                   "detail": {
@@ -132,6 +116,7 @@
                 "header": {
                   "actions": {
                     "ExportDuplicati": {
+                      "press": ".extension.materialhub.ext.controller.ActionHandler.onExportDuplicati",
                       "text": "Esporta Duplicati (XLSX)",
                       "icon": "sap-icon://download",
                       "position": {
@@ -180,6 +165,9 @@
       "extensions": {
         "sap.ui.controllerExtensions": {
           "sap.fe.templates.ListReport.ListReportController": {
+            "controllerName": "materialhub.ext.controller.ActionHandler"
+          },
+          "sap.fe.templates.AnalyticalListPage.AnalyticalListPageController": {
             "controllerName": "materialhub.ext.controller.ActionHandler"
           }
         }

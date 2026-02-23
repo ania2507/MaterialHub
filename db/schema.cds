@@ -13,7 +13,7 @@ entity T001W {
 
 entity MARC {
     key MATNR : String(18);   // Materiale
-    key WERKS : String(4);    // Div. (Divisione / Plant)
+    key WERKS : String(4)  @title : 'Divisioni';    // Div. (Divisione / Plant)
     LVORM     : String(1)  @title : 'Indice di cancellazione';
     MMSTA     : String(2) @title : 'Stato materiale';    // SM (Stato mat. spec. divisione);
     MATNR_DIV : Association to one MARA on MATNR_DIV.MATNR = MATNR

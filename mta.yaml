@@ -17,7 +17,8 @@ modules:
       buildpack: nodejs_buildpack
       instances: 1
     build-parameters:
-      builder: npm-ci
+      builder: npm
+      build-result: .
   - name: MaterialHubApp-db-deployer
     type: hdb
     path: gen/db
@@ -43,6 +44,11 @@ modules:
           name: srv-api
           url: ~{srv-url}
       - name: MaterialHubApp-auth
+      - name: MaterialHubApp-html5-runtime
+    provides:
+      - name: app-api
+        properties:
+          url: ${default-url}
     parameters:
       disk-quota: 256M
       keep-existing-routes: true
@@ -63,21 +69,39 @@ modules:
         - npm install
         - npm run build
       supported-platforms: []
+  - name: MaterialHubApp-html5-deployer
+    type: com.sap.application.content
+    path: .
+    requires:
+      - name: MaterialHubApp-html5-repo-host
+        parameters:
+          content-target: true
+      - name: MaterialHubApp-html5-runtime
+    build-parameters:
+      build-result: resources
+      ignore:
+        - materialhub/
+      requires:
+        - name: MaterialHubAppmaterialhub
+          artifacts:
+            - materialhub.zip
+          target-path: resources/
 resources:
   - name: MaterialHubApp-auth
     type: org.cloudfoundry.managed-service
     requires:
-      - name: srv-api
+      - name: app-api
     parameters:
       service: xsuaa
       service-plan: application
       path: ./xs-security.json
       config:
         tenant-mode: dedicated
-        xsappname: materialhubapp-${space}
+        xsappname: materialhubapp
         oauth2-configuration:
           redirect-uris:
-            - https://*~{srv-api/srv-url}/**
+            - ~{app-api/url}/login/callback
+            - ~{app-api/url}/**
   - name: MaterialHubApp-db
     type: com.sap.xs.hdi-container
     parameters:
@@ -108,5 +132,6 @@ build-parameters:
   before-all:
     - builder: custom
       commands:
+        - rm -rf resources/*
         - npm ci
         - npx cds build --production

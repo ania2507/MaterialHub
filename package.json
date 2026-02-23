@@ -15,29 +15,31 @@
     "cds-plugin-ui5": "^0.13.0"
   },
   "scripts": {
-    "start": "cds run",
+    "start": "node node_modules/@sap/cds/bin/serve.js",
     "watch-materialhub": "cds watch --open materialhub/index.html?sap-ui-xx-viewCache=false --livereload false"
   },
   "private": true,
   "cds": {
     "requires": {
-      "[production]": {
+      "auth": "mocked",
+      "[hybrid]": {
         "auth": "mocked"
       },
-      "watch": {
-        "exclude": [
-          "node_modules",
-          "dist",
-          "test"
-        ]
-      },
-      "destinations": true,
-      "html5-repo": true,
-      "workzone": true
+      "[production]": {
+        "auth": "xsuaa"
+      }
+    },
+    "watch": {
+      "livereload": false,
+      "exclude": [
+        "node_modules",
+        "dist",
+        "test"
+      ]
     }
   },
   "sapux": [
     "app/materialhub"
   ],
-  "engines": { "node": "18.x || 20.x" }
+  "engines": { "node": ">=18.0.0" }
 }

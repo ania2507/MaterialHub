@@ -1,7 +1,7 @@
 using db from '../db/schema';
 
 service ServiceCatalog {
-    @requires:'Admin'
+    
     entity T001K as projection on db.T001K;
 
     entity T001W as projection on db.T001W;
@@ -44,10 +44,10 @@ service ServiceCatalog {
     entity tp_company as projection on db.tp_company;
     @requires:'Admin'
     entity tp_materialtype as projection on db.tp_materialtype;
-
+    @requires:'Admin'
     entity tp_caratteristiche as projection on db.tp_caratteristiche;
 
-    
+    @requires:'Admin'
     entity MARA as select from db.MARA  as a 
              left join MARA_Duplicates as b on a.MATNR = b.MATNR 
              left join PurchLastMonths as c on a.MATNR = c.MATNR{
@@ -151,7 +151,7 @@ service ServiceCatalog {
             count(d.MATNRD)    as PotenzialiDuplicati : Integer  @title : 'Potenziali Duplicati',   
             max(d.MATCH_SCORE) as MaxMatchScore       : Integer, 
             MATERIAL.MTART   as MTART,
-            min(d.INSERT_DATE) as AnalysisDate     : Date       
+            min(d.INSERT_DATE) as AnalysisDate     : Date @title : 'Data Analisi'       
         }
     group by d.MATNR, MATERIAL.MTART;
 

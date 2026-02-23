@@ -1,0 +1,106 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="utf-8" />
+  <title>Debug Test</title>
+  <style>
+    body { font-family: Arial, sans-serif; padding: 20px; }
+    #log { background: #f0f0f0; padding: 10px; white-space: pre-wrap; font-size: 12px; max-height: 400px; overflow-y: auto; }
+    .error { color: red; }
+    .info { color: blue; }
+  </style>
+  <script>
+    var logEl;
+    function addLog(msg, cls) {
+      if (!logEl) logEl = document.getElementById('log');
+      var d = document.createElement('div');
+      d.className = cls || '';
+      d.textContent = new Date().toISOString() + ' ' + msg;
+      logEl.appendChild(d);
+    }
+    window.onerror = function(msg, url, line, col, err) {
+      addLog('ERROR: ' + msg + ' at ' + url + ':' + line, 'error');
+    };
+    window.addEventListener('unhandledrejection', function(e) {
+      addLog('PROMISE ERROR: ' + (e.reason && e.reason.message || e.reason), 'error');
+    });
+  </script>
+</head>
+<body>
+  <h2>MaterialHub Debug Page</h2>
+  <div id="log"></div>
+  <hr/>
+  <div id="content"></div>
+  <script>
+    addLog('Page loaded, testing resources...', 'info');
+
+    // Test 1: Can we fetch Component.js?
+    fetch('./Component.js').then(function(r) {
+      addLog('Component.js: ' + r.status + ' ' + r.statusText, r.ok ? 'info' : 'error');
+      return r.text();
+    }).then(function(t) {
+      addLog('Component.js content starts with: ' + t.substring(0, 80), 'info');
+    }).catch(function(e) {
+      addLog('Component.js FETCH ERROR: ' + e.message, 'error');
+    });
+
+    // Test 2: Can we fetch manifest.json?
+    fetch('./manifest.json').then(function(r) {
+      addLog('manifest.json: ' + r.status + ' ' + r.statusText, r.ok ? 'info' : 'error');
+      return r.json();
+    }).then(function(j) {
+      addLog('manifest.json app id: ' + j['sap.app'].id, 'info');
+      addLog('manifest.json dataSource uri: ' + j['sap.app'].dataSources.mainService.uri, 'info');
+    }).catch(function(e) {
+      addLog('manifest.json FETCH ERROR: ' + e.message, 'error');
+    });
+
+    // Test 3: Can we reach OData?
+    fetch('/odata/v4/service-catalog/$metadata').then(function(r) {
+      addLog('OData $metadata: ' + r.status + ' ' + r.statusText, r.ok ? 'info' : 'error');
+    }).catch(function(e) {
+      addLog('OData FETCH ERROR: ' + e.message, 'error');
+    });
+
+    // Test 4: Can we load UI5?
+    addLog('Loading UI5 from sapui5.hana.ondemand.com...', 'info');
+    var s = document.createElement('script');
+    s.src = 'https://sapui5.hana.ondemand.com/resources/sap-ui-core.js';
+    s.setAttribute('data-sap-ui-resourceroots', '{"materialhub": "./"}');
+    s.setAttribute('data-sap-ui-xx-componentPreload', 'off');
+    s.setAttribute('data-sap-ui-flexibilityServices', '[]');
+    s.onload = function() {
+      addLog('UI5 loaded successfully! Version: ' + (sap && sap.ui && sap.ui.version), 'info');
+      addLog('All checks passed. Attempting to load app component...', 'info');
+
+      sap.ui.require(['sap/ui/core/ComponentContainer'], function(ComponentContainer) {
+        addLog('ComponentContainer loaded, creating component...', 'info');
+        try {
+          var cc = new ComponentContainer({
+            name: "materialhub",
+            async: true,
+            manifest: true,
+            componentCreated: function(oEvent) {
+              addLog('Component CREATED successfully!', 'info');
+            },
+            componentFailed: function(oEvent) {
+              var reason = oEvent.getParameter("reason");
+              addLog('Component FAILED: ' + JSON.stringify(reason), 'error');
+              if (reason && reason.message) addLog('Reason message: ' + reason.message, 'error');
+              if (reason && reason.stack) addLog('Stack: ' + reason.stack, 'error');
+            }
+          });
+          cc.placeAt("content");
+          addLog('ComponentContainer placed at #content', 'info');
+        } catch(e) {
+          addLog('Component creation ERROR: ' + e.message + '\n' + e.stack, 'error');
+        }
+      });
+    };
+    s.onerror = function() {
+      addLog('FAILED to load UI5!', 'error');
+    };
+    document.head.appendChild(s);
+  </script>
+</body>
+</html>

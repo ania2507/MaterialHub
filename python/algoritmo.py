@@ -86,6 +86,21 @@ def truncate_text(value: str | None, max_len: int) -> str | None:
 
 MAX_LEN_MATCH_VALUE = 500
 
+def normalize_text(text: str | None) -> str | None:
+    if text is None:
+        return None
+
+    # split per righe, strip per riga
+    lines = [line.strip() for line in text.splitlines()]
+
+    # rimuove righe vuote
+    lines = [line for line in lines if line]
+
+    # normalizza spazi interni
+    lines = [re.sub(r"\s+", " ", line) for line in lines]
+
+    return "\n".join(lines)
+
 # ===========================
 # CONNESSIONE HANA
 # ===========================
@@ -310,7 +325,7 @@ testimat = (
         "TDID": "ZTESTO"
     })
 )
-testimat["ZESTESO"] = testimat["ZESTESO"].str.slice(0, 1000)
+testimat["ZESTESO"] = testimat["ZESTESO"].apply(normalize_text).str.slice(0, 1000)
 testimat = testimat.drop_duplicates(subset=["MATNR", "ZTESTO"])
 
 
